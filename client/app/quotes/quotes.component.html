@@ -1,0 +1,88 @@
+<app-loading [condition]="isLoading"></app-loading>
+
+<app-toast [message]="toast.message"></app-toast>
+
+<div class="card mb-3" *ngIf="!isLoading">
+  <h4 class="card-header">Current quotes ({{quotes.length}})</h4>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Gallons Requested</th>
+          <th scope="col">Delivery Address</th>
+          <th scope="col">Delivery Date</th>
+          <th scope="col">Suggested Price</th>
+          <th scope="col">Total Amount Due</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="quotes.length === 0">
+        <tr>
+          <td colspan="5">There are no quotes in the DB. Add a new quote below.</td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="!isEditing">
+        <tr *ngFor="let quote of quotes">
+          <td>{{quote.gallons_requested}}</td>
+          <td>{{quote.delivery_address}}</td>
+          <td>{{quote.delivery_date}}</td>
+          <td>{{quote.suggested_price}}</td>
+          <td>{{quote.total_amount}}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="enableEditing(quote)">
+              <i class="fa fa-pencil"></i> Edit
+            </button> 
+            <button class="btn btn-sm btn-danger ml-1" (click)="deleteQuote(quote)">
+              <i class="fa fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="isEditing">
+        <tr>
+          <td colspan="4">
+            <form class="form-inline" #form="ngForm" (ngSubmit)="editQuote(quote)">
+              <input class="form-control mr-2" type="number" name="gallons_requested"
+                     [(ngModel)]="quote.gallons_requested" placeholder="Gallons Requested" required>
+              <input class="form-control mr-2" type="text" name="delivery_address"
+                     [(ngModel)]="quote.delivery_address" placeholder="Delivery Address" min="0" required >
+              <input class="form-control mr-2" type="string" name="delivery_date"
+                     [(ngModel)]="quote.delivery_date" placeholder="Delivery Date" step="any" min="0" required>
+              <input class="form-control mr-2" type="number" name="suggested_price"
+                     [(ngModel)]="quote.suggested_price" placeholder="Suggested Price" step="any" min="0" required>
+                     <input class="form-control mr-2" type="number" name="total_amount"
+                     [(ngModel)]="quote.total_amount" placeholder="Total Amount" step="any" min="0" required>
+              <button class="btn btn-sm btn-primary mr-2" type="submit" [disabled]="!form.form.valid">
+                <i class="fa fa-floppy-o"></i> Save
+              </button>
+              <button class="btn btn-sm btn-warning" (click)="cancelEditing()">
+                <i class="fa fa-times"></i> Cancel
+              </button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" *ngIf="!isEditing">
+  <h4 class="card-header">Add new quote</h4>
+  <div class="card-body">
+    <form class="form-inline" [formGroup]="addQuoteForm" (ngSubmit)="addQuote()">
+      <input class="form-control mr-2" type="number" name="gallons_requested"
+             formControlName="gallons_requested" placeholder="Gallons Requested">
+      <input class="form-control mr-2" type="text" name="delivery_address"
+             formControlName="delivery_address" placeholder="Delivery Address" min="0">
+      <input class="form-control mr-2" type="string" name="delivery_date"
+             formControlName="delivery_date" placeholder="Delivery date" step="any" min="0">
+      <input class="form-control mr-2" type="number" name="suggested_price"
+             formControlName="suggested_price" placeholder="Suggested Price" step="any" min="0">
+      <input class="form-control mr-2" type="number" name="total_amount"
+             formControlName="total_amount" placeholder="Total Amount Due" step="any" min="0">
+      <button class="btn btn-primary" type="submit" [disabled]="!addQuoteForm.valid">
+        <i class="fa fa-plus"></i> Add
+      </button>
+    </form>
+  </div>
+</div>
